@@ -6,3 +6,4 @@ build: clean
 
 clean:
 	rm -rf build
+	rm -f app
