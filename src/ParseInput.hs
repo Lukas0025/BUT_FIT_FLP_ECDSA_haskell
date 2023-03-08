@@ -4,71 +4,27 @@
 -- This file implementing File parsing
 -- @author Lukáš Plevač <at> BUT FIT 
 --
-module FileParser where
+module ParseInput where
+import Types 
 
---
--- Data structures
---
-data Config = Config {
-    curve     :: Curve,
-    key       :: Key,
-    signature :: Signature
-} deriving (Show)
+---
+--- CLI Arguments parser part
+---
 
-data Point = Point { 
-  x :: Integer,
-  y :: Integer
-} deriving (Show)
+parseOptions :: [String] -> Options -> Options
+parseOptions []              opts = opts
 
-data Curve = Curve {
-    p :: Integer,
-    a :: Integer,
-    b :: Integer,
-    g :: Point,
-    n :: Integer,
-    h :: Integer
-} deriving (Show)
+parseOptions ("-i":args) opts  = parseOptions args (opts { optBypass = True   })
+parseOptions ("-k":args) opts  = parseOptions args (opts { optNewKey = True   })
+parseOptions ("-s":args) opts  = parseOptions args (opts { optSing   = True   })
+parseOptions ("-v":args) opts  = parseOptions args (opts { optVerify = True   })
 
-data Key = Key {
-    d :: Integer,
-    q :: Integer
-} deriving (Show)
+parseOptions (arg:[])    opts  = parseOptions []   (opts { optInputFile = arg  })
+parseOptions (arg:args)  opts  = parseOptions args opts
 
-data Signature = Signature {
-    r :: Integer,
-    s :: Integer
-} deriving (Show)
-
-
-defaultConfig = Config {
-    curve = Curve {
-        p = 0,
-        a = 0,
-        b = 0,
-        
-        g = Point {
-            x = 0,
-            y = 0
-        },
-
-        n = 0,
-        h = 0
-    },
-
-    key = Key {
-        d = 0,
-        q = 0
-    },
-
-    signature = Signature {
-        r = 0,
-        s = 0
-    }
-}
-
---
--- Data struct manager
---
+---
+--- File parser part
+---
 
 updateCurveP (Curve _ a b (Point x y) n h) new     = Curve new a   b   (Point x y) n   h
 updateCurveA (Curve p _ b (Point x y) n h) new     = Curve p   new b   (Point x y) n   h
