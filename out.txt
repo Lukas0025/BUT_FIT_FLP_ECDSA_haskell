@@ -1,0 +1,9 @@
+rm -rf build
+rm -f app
+mkdir build
+ghc -dynamic --make -Wall -outputdir build/ src/* -o flp22-fun
+[1 of 4] Compiling Minimize         ( src/Minimize.hs, build/Minimize.o )
+[2 of 4] Compiling Types            ( src/Types.hs, build/Types.o )
+[3 of 4] Compiling ParseInput       ( src/ParseInput.hs, build/ParseInput.o )
+[4 of 4] Compiling Main             ( src/Main.hs, build/Main.o )
+Linking flp22-fun ...
