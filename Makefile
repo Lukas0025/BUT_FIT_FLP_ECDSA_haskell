@@ -2,7 +2,7 @@
 
 build: clean
 	mkdir build
-	ghc -dynamic --make -Wall -outputdir build/ src/* -o flp22-fun
+	ghc -dynamic -Wall -outputdir build/ src/* -o flp22-fun
 
 test:
 	./flp22-fun -2 test.in
