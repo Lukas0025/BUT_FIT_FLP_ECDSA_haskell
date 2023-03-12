@@ -6,6 +6,23 @@
 --
 module ParseInput where
 import Types
+import Data.Bits
+
+---
+--- Support function
+---
+
+bytesMask :: Integer -> Integer
+bytesMask i = if i > 0 then 0xFF .|. ((bytesMask (i - 1)) `shiftL` 8) else 0
+
+parseSECFormat :: Integer -> Point
+parseSECFormat i = (Point xp yp)
+    where
+        xp :: Integer
+        xp =  (i `shiftR` 256) .&. (bytesMask 32)
+
+        yp :: Integer
+        yp =   i               .&. (bytesMask 32)
 
 ---
 --- CLI Arguments parser part
@@ -54,7 +71,7 @@ parseCurvePoint _               cfg = (cfg { ok = False })
 
 parseKey :: [String] -> Config -> Config
 parseKey ("d:":val:args) cfg  = parseKey args (cfg { key = updateKeyD (key cfg) (read val::Integer) })
-parseKey ("Q:":val:args) cfg  = parseKey args (cfg { key = updateKeyQ (key cfg) (Point (read val::Integer) 0) })
+parseKey ("Q:":val:args) cfg  = parseKey args (cfg { key = updateKeyQ (key cfg) (parseSECFormat (read val::Integer)) })
 parseKey ("}":args)      cfg  = parseWords args cfg
 parseKey _               cfg = (cfg { ok = False })
 

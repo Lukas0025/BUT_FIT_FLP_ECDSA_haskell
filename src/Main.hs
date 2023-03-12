@@ -34,4 +34,21 @@ main = do
       let gkey    = generateKey parsedConfig privateKey
       putStrLn (show gkey)
     else pure ()
+
+  --make signature if arg definaded
+  if (optSing options) == True
+    then do
+      nonce <- generateNonce     parsedConfig
+      -- For testing without random
+      --let nonce = 12345
+      let gsign    = generateSign parsedConfig nonce (hash parsedConfig)
+      putStrLn (show gsign)
+    else pure ()
+
+  --make verify if arg definaded
+  if (optVerify options) == True
+    then do
+      let verified = verify parsedConfig (signature parsedConfig) (hash parsedConfig)
+      putStrLn (show verified)
+    else pure ()
   

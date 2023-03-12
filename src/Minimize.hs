@@ -1,7 +1,6 @@
 module Minimize where
 import Types
 import System.Random
-import Data.Bits
 
 --
 -- Support function for curve aritmetic
@@ -82,3 +81,22 @@ generateNonce :: Config -> IO Integer
 generateNonce cfg = randomRIO (1, (n (curve cfg)) - 1)
 
 generateSign :: Config -> Integer -> Integer -> Signature
+generateSign cfg nonce hash = (Signature r s)
+  where
+    r :: Integer
+    r = (x (multipy (g (curve cfg)) nonce (curve cfg))) `mod` (n (curve cfg))
+
+    s :: Integer
+    s = ((modularInverse nonce (n (curve cfg))) * (hash + (d (key cfg)) * r)) `mod` (n (curve cfg))
+
+verify :: Config -> Signature -> Integer -> Bool
+verify cfg sign hash = (x point3) == (r sign)
+  where
+    point1 :: Point
+    point1 = multipy (g (curve cfg)) ((modularInverse (s sign) (n (curve cfg))) * hash)     (curve cfg)
+
+    point2 :: Point
+    point2 = multipy (q (key cfg))   ((modularInverse (s sign) (n (curve cfg))) * (r sign)) (curve cfg)
+
+    point3 :: Point
+    point3 = add point1 point2 (curve cfg)
