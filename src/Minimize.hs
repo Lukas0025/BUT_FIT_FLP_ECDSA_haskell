@@ -1,6 +1,7 @@
 module Minimize where
 import Types
 import System.Random
+import Data.Bits
 
 --
 -- Support function for curve aritmetic
@@ -14,6 +15,7 @@ toBits n = reverse (recurseCalc n)
 
 dropFirst :: [Integer] -> [Integer]
 dropFirst (_:xs) = xs
+dropFirst []     = []
 
 modularInverse :: Integer -> Integer -> Integer
 modularInverse a m = (findY 0 1 aPos m) `mod` m
@@ -69,14 +71,14 @@ multipy g i cr = multipyBin g (dropFirst (toBits i))
 --
 -- Ecdsa functions
 --
-toSEC :: Point -> Integer
-toSEC point = y point
-
-unSEC :: Integer -> Point
-unSEC _ = (Point 0 0)
 
 generateKey :: Config -> Integer -> Key
-generateKey cfg privateKey = (Key privateKey (toSEC (multipy (g (curve cfg)) privateKey (curve cfg))))
+generateKey cfg privateKey = (Key privateKey (multipy (g (curve cfg)) privateKey (curve cfg)))
 
 generatePrivateKey :: Config -> IO Integer
 generatePrivateKey cfg = randomRIO (1, (n (curve cfg)) - 1)
+
+generateNonce :: Config -> IO Integer
+generateNonce cfg = randomRIO (1, (n (curve cfg)) - 1)
+
+generateSign :: Config -> Integer -> Integer -> Signature

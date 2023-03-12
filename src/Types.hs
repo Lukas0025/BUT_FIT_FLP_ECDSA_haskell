@@ -1,4 +1,5 @@
 module Types where
+import Numeric (showHex)
 
 --
 -- CLI Parameters (options)
@@ -28,7 +29,8 @@ data Config = Config {
     curve     :: Curve,
     key       :: Key,
     signature :: Signature,
-    ok        :: Bool
+    ok        :: Bool,
+    hash      :: Integer
 } deriving (Show)
 
 data Point = Point { 
@@ -36,7 +38,7 @@ data Point = Point {
   y :: Integer
 } deriving (Show)
 
-instance Eq Point where
+instance Eq   Point where
     (Point x1 y1) == (Point x2 y2) = x1 == x2 && y1 == y2
 
 data Curve = Curve {
@@ -50,14 +52,19 @@ data Curve = Curve {
 
 data Key = Key {
     d :: Integer,
-    q :: Integer
-} deriving (Show)
+    q :: Point
+}
+
+instance Show Key where
+  show (Key d q) = "Key {\nd: 0x" ++ hex256 d ++ "\nQ: 0x04" ++ hex256 (x q) ++ hex256 (y q) ++ "\n}"
 
 data Signature = Signature {
     r :: Integer,
     s :: Integer
-} deriving (Show)
+}
 
+instance Show Signature where
+  show (Signature r s) = "Signature {\nr: 0x" ++ hex256 r ++ "\ns: 0x" ++ hex256 s ++ "\n}"
 
 defaultConfig :: Config
 defaultConfig = Config {
@@ -77,7 +84,10 @@ defaultConfig = Config {
 
     key = Key {
         d = 0,
-        q = 0
+        q = Point {
+            x = 0,
+            y = 0
+        }
     },
 
     signature = Signature {
@@ -85,8 +95,15 @@ defaultConfig = Config {
         s = 0
     },
 
-    ok = True
+    ok = True,
+    hash = 0
 }
+
+zfill :: Int -> String -> String
+zfill n s = replicate (n - length s) '0' ++ s
+
+hex256 :: Integer -> String
+hex256 x = zfill 64 (showHex x "")
 
 updateCurveP :: Curve -> Integer -> Curve
 updateCurveP (Curve _ a b (Point x y) n h) new     = Curve new a   b   (Point x y) n   h
@@ -112,7 +129,7 @@ updateCurvePointY (Curve p a b (Point x _) n h) new = Curve p a b (Point x   new
 updateKeyD :: Key -> Integer -> Key
 updateKeyD (Key _ q) new = Key new q
 
-updateKeyQ :: Key -> Integer -> Key
+updateKeyQ :: Key -> Point -> Key
 updateKeyQ (Key d _) new = Key d   new
 
 updateSignatureR :: Signature -> Integer -> Signature

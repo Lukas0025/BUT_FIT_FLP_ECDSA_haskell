@@ -28,12 +28,10 @@ main = do
   -- generate new key if arg definaded
   if (optNewKey options) == True
     then do
-      --privateKey <- generatePrivateKey     parsedConfig
+      privateKey <- generatePrivateKey     parsedConfig
       -- For testing without random
-      let privateKey = 112757557418114203588093402336452206775565751179231977388358956335153294300646
+      --let privateKey = 112757557418114203588093402336452206775565751179231977388358956335153294300646
       let gkey    = generateKey parsedConfig privateKey
-      let point = (multipy (Point 1 5) 3 (curve parsedConfig))
-      putStrLn (show point)
       putStrLn (show gkey)
     else pure ()
   

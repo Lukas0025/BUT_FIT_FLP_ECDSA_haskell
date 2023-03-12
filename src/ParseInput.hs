@@ -32,6 +32,7 @@ parseWords :: [String] -> Config -> Config
 parseWords ("Curve":"{":args)     cfg = parseCurve     args cfg
 parseWords ("Key":"{":args)       cfg = parseKey       args cfg
 parseWords ("Signature":"{":args) cfg = parseSignature args cfg
+parseWords ("Hash:":val:args)     cfg = parseWords     args (cfg { hash = (read val::Integer) })
 parseWords []                     cfg = cfg
 parseWords _                      cfg = (cfg { ok = False })
 
@@ -53,7 +54,7 @@ parseCurvePoint _               cfg = (cfg { ok = False })
 
 parseKey :: [String] -> Config -> Config
 parseKey ("d:":val:args) cfg  = parseKey args (cfg { key = updateKeyD (key cfg) (read val::Integer) })
-parseKey ("Q:":val:args) cfg  = parseKey args (cfg { key = updateKeyQ (key cfg) (read val::Integer) })
+parseKey ("Q:":val:args) cfg  = parseKey args (cfg { key = updateKeyQ (key cfg) (Point (read val::Integer) 0) })
 parseKey ("}":args)      cfg  = parseWords args cfg
 parseKey _               cfg = (cfg { ok = False })
 
