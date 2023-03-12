@@ -30,7 +30,7 @@ main = do
     then do
       privateKey <- generatePrivateKey     parsedConfig
       -- For testing without random
-      --let privateKey = 112757557418114203588093402336452206775565751179231977388358956335153294300646
+      --let privateKey = 0xc9dcda39c4d7ab9d854484dbed2963da9c0cf3c6e9333528b4422ef00dd0b28e
       let gkey    = generateKey parsedConfig privateKey
       putStrLn (show gkey)
     else pure ()

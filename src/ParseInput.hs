@@ -50,6 +50,7 @@ parseWords ("Curve":"{":args)     cfg = parseCurve     args cfg
 parseWords ("Key":"{":args)       cfg = parseKey       args cfg
 parseWords ("Signature":"{":args) cfg = parseSignature args cfg
 parseWords ("Hash:":val:args)     cfg = parseWords     args (cfg { hash = (read val::Integer) })
+parseWords ("PublicKey":"{":args) cfg = parsePubKey    args cfg
 parseWords []                     cfg = cfg
 parseWords _                      cfg = (cfg { ok = False })
 
@@ -74,6 +75,11 @@ parseKey ("d:":val:args) cfg  = parseKey args (cfg { key = updateKeyD (key cfg) 
 parseKey ("Q:":val:args) cfg  = parseKey args (cfg { key = updateKeyQ (key cfg) (parseSECFormat (read val::Integer)) })
 parseKey ("}":args)      cfg  = parseWords args cfg
 parseKey _               cfg = (cfg { ok = False })
+
+parsePubKey :: [String] -> Config -> Config
+parsePubKey ("Q:":val:args) cfg  = parsePubKey args (cfg { key = updateKeyQ (key cfg) (parseSECFormat (read val::Integer)) })
+parsePubKey ("}":args)      cfg  = parseWords args cfg
+parsePubKey _               cfg = (cfg { ok = False })
 
 parseSignature :: [String] -> Config -> Config
 parseSignature ("r:":val:args) cfg  = parseSignature args (cfg { signature = updateSignatureR (signature cfg) (read val::Integer) })
